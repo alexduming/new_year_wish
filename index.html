@@ -620,12 +620,12 @@ body::before {
                 <div class="year-label">乙巳蛇年 · 2025</div>
             </header>
 
-            <!-- API配置 -->
-            <section class="api-config">
+            <!-- API配置（管理员入口，默认隐藏） -->
+            <section class="api-config" id="apiConfigSection" style="display: none;">
                 <div class="api-config-header">
                     <div class="api-config-title">
                         <i data-lucide="key"></i>
-                        <span>智谱API配置</span>
+                        <span>智谱API配置（管理员）</span>
                     </div>
                     <div class="api-status" id="apiStatus">
                         <span class="api-status-dot"></span>
@@ -636,6 +636,9 @@ body::before {
                     <input type="password" class="api-input" id="apiKeyInput" placeholder="输入您的智谱API Key">
                     <button class="btn-api-save" id="saveApiBtn">确定</button>
                 </div>
+                <p style="font-size: 0.75rem; color: var(--color-text-tertiary); margin-top: var(--space-2);">
+                    提示：按 ESC 键关闭此面板
+                </p>
             </section>
 
             <!-- 模式切换 -->
@@ -792,6 +795,43 @@ body::before {
     <script>
         // 初始化Lucide图标
         lucide.createIcons();
+
+        // ========================================
+        // 管理员入口控制
+        // ========================================
+        const apiConfigSection = document.getElementById('apiConfigSection');
+
+        // 方式1: URL参数 ?admin 打开管理员面板
+        if (window.location.search.includes('admin')) {
+            apiConfigSection.style.display = 'block';
+        }
+
+        // 方式2: 快捷键 Ctrl+Shift+A 打开管理员面板
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Shift+A 打开
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                apiConfigSection.style.display = 'block';
+                apiKeyInput.focus();
+            }
+            // ESC 关闭
+            if (e.key === 'Escape' && apiConfigSection.style.display === 'block') {
+                apiConfigSection.style.display = 'none';
+            }
+        });
+
+        // 方式3: 连续点击品牌名5次打开
+        let brandClickCount = 0;
+        let brandClickTimer = null;
+        document.querySelector('.brand-name').addEventListener('click', () => {
+            brandClickCount++;
+            clearTimeout(brandClickTimer);
+            brandClickTimer = setTimeout(() => { brandClickCount = 0; }, 2000);
+            if (brandClickCount >= 5) {
+                apiConfigSection.style.display = 'block';
+                brandClickCount = 0;
+            }
+        });
 
         // ========================================
         // 随机祝福语库
